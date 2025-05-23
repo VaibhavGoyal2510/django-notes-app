@@ -14,7 +14,7 @@ services:
       - notes-app-nw
 
   django_app:
-    image: killerbhaivg/notes-app:latest
+    image: "killerbhaivg/notes-app:latest"
     container_name: "django_cont"
     ports:
       - "8000:8000"
