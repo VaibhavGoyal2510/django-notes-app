@@ -1,29 +1,63 @@
-@Library('Shared')_
-pipeline{
-    agent { label 'dev-server'}
+@Library("Shared") _
+pipeline {
+    agent {label "lovely"}
     
     stages{
-        stage("Code clone"){
+        stage("Hello"){
             steps{
-                sh "whoami"
-            clone("https://github.com/LondheShubham153/django-notes-app.git","main")
+                script{
+                    hello()
+                }
             }
         }
-        stage("Code Build"){
+        stage("Code"){
             steps{
-            dockerbuild("notes-app","latest")
+                // echo "This is cloning the code"
+                // git url: "https://github.com/VaibhavGoyal2510/django-notes-app.git", branch:"main"
+                // echo "Code cloning successful"
+                script{
+                    clone("https://github.com/VaibhavGoyal2510/django-notes-app.git","main")
+                }
             }
         }
-        stage("Push to DockerHub"){
+        //  stage("Install Docker"){
+        //      steps{
+        //          sh "sudo apt-get -y install docker.io "
+        //          sh "sudo usermod -aG docker $USER"
+        //          sh "sudo newgrp docker"
+        //      }
+        //  }
+        stage("Build"){
             steps{
-                dockerpush("dockerHubCreds","notes-app","latest")
+                // echo "This is building my friend"
+                // sh "whoami"
+                // sh "sudo docker build -t notes-app:latest ."
+                script{
+                    docker_build("notes-app","latest","killerbhaivg")
+                }
+            }
+        }
+        stage("Push To docker Hub"){
+            steps{
+                echo "This is pushing img to DOcker my friend"
+                // withCredentials([usernamePassword('credentialsId':"docker-hub-cred",
+                // passwordVariable:"dockerHubPass",
+                // usernameVariable:"dockerHubUser")])
+                // {
+                // sh "sudo docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                // sh "sudo docker image tag notes-app:latest ${env.dockerHubUser}/notes-app:latest"
+                // sh "sudo docker push ${env.dockerHubUser}/notes-app:latest"
+                // }
+                script{
+                    docker_push("notes-app","latest","killerbhaivg")
+                }
             }
         }
         stage("Deploy"){
             steps{
-                deploy()
+                echo "This is deploying my friend"
+                sh "sudo docker compose up -d"
             }
         }
-        
     }
 }
